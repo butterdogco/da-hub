@@ -204,15 +204,6 @@
   }
 }
 
-#summerInfo {
-  section {
-    width: 500px;
-    max-width: 95vw;
-    margin-left: 50%;
-    transform: translateX(-50%);
-  }
-}
-
 body.settingsOpen main {
   pointer-events: none;
 }

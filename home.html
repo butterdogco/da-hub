@@ -30,26 +30,12 @@
         <button class="closeButton" id="settingsFSCloseButton" onclick="toggleSettings()" data-lang="settingsClose">Close</button>
         <ul id="settingsList"></ul>
     </div>
-    <div id="summerInfo" class="backdropBlur overlayMenu">
-        <h1 data-lang="summerInfoHeader">About Summer Updates</h1>
-        <button class="closeButton" onclick="toggleSummerInfo()" data-lang="settingsClose">Close</button>
-        <section>
-            <h2 data-lang="summerInfoH1">Will there be updates during summer break?</h2>
-            <p data-lang="summerInfoP1">Yes! But, they'll be much less frequent, and expect most of them to be small content drops. New features will release closer to the end of the break.</p>
-            <h2 data-lang="summerInfoH2">Will the request form be checked?</h2>
-            <p data-lang="summerInfoP2">Similar to the updates, yes. However, it'll for sure be checked much less.</p>
-            <hr>
-            <p data-lang="summerInfoNote1">Anyway, have a great summer! See you guys after break!</p>
-            <p data-lang="summerInfoNote2">If you need to get in contact with us during break, please see our social links in the "Extra" section in settings.</p>
-        </section>
-    </div>
     <main id="main">
         <div id="bgFilter"></div>
         <div class="topHeader blackBGGradientTop backdropBlur">
             <div class="buttons backdropBlurChildren">
                 <a target="_blank" href="https://forms.gle/wRjANHLeSoAidRvc6" data-lang-title="appRequestButtonTitle" title="Click to open the Google Form in a new tab" data-lang="appRequestButton">Request a new game</a>
                 <a target="_blank" href="https://butterdogceo.github.io/requests/" data-lang-title="requestStatusesButtonTitle" title="Click to open the requests website in a new tab" data-lang="requestStatusesButton">View suggestion statuses</a>
-                <a target="_blank" onclick="toggleSummerInfo()" data-lang-title="summerUpdateNoticeButtonTitle" title="Click to view more information on summer updates" data-lang="summerUpdateNoticeButton">Summer updates info</a>
             </div>
             <span id="latestUpdate" data-lang="latestUpdate"><b data-lang="latestUpdateVersion">Loading...</b><br><span data-lang="latestUpdateContent">Loading...</span></span>
             <span id="logo" onclick="logoClick()">

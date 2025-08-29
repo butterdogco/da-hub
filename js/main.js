@@ -214,10 +214,6 @@ function logoClick() {
   }
 }
 
-function toggleSummerInfo() {
-  summerInfoDiv.classList.toggle("open");
-}
-
 function observe(element, callback) {
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
