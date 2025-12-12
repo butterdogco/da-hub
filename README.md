@@ -18,3 +18,5 @@ Tons of games are available on the website, ranging from Flash games, NES, msDOS
 - ButterDogCEO | Creator and maintainer
 - Everyone who made the games (sorry for uhm just taking them)
 - chilibowlgames | Which Da Hub was originally a fork of
+
+- Kai d. "Bro seriously put uhm instead of um"
