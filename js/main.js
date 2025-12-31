@@ -149,38 +149,6 @@ async function openSite(url) {
   }
 }
 
-
-/**
- * Returns whether or not the current window has the iframe=true parameter.
- */
-function getInIframe() {
-  try {
-    const params = new URL(document.location).searchParams;
-    const iframe = params.get("iframe");
-    return (iframe == "true" && iframe != null);
-  } catch (e) {
-    return true;
-  }
-}
-
-/**
- * Checks whether or not the window is in an iframe, and corrects the URL if needed.
- */
-function checkInFrame() {
-  if (getInIframe() == false) {
-    document.body.innerHTML = "";
-    window.location.href = `home.html?iframe=true`;
-  } else {
-    window.addEventListener('beforeunload', (event) => {
-      event.returnValue = "Are you sure you want to leave?";
-    });
-    document.addEventListener('contextmenu', function (e) {
-      e.preventDefault();
-      // toggleContextMenu(e);
-    }, false);
-  }
-}
-
 /**
  * Returns whether or not the user is currently on a mobile device
  */
@@ -190,7 +158,6 @@ function isMobile() {
     (window.innerWidth <= 768 && 'ontouchstart' in window)       // screen size + touch
   );
 }
-
 
 /**
  * Handler for detected mobile devices.
@@ -237,11 +204,14 @@ if (_weeklyEnabled == false) {
 }
 sortApps();
 
-// Events
-document.addEventListener('DOMContentLoaded', function () {
-  checkInFrame();
+window.addEventListener('beforeunload', (event) => {
+  event.returnValue = "Are you sure you want to leave?";
 });
+document.addEventListener('contextmenu', function (e) {
+  e.preventDefault();
+}, false);
 
+// Events
 clear.addEventListener("click", function () {
   searchInput.value = "";
   searchApp();
