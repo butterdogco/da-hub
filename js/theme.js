@@ -16,7 +16,7 @@ let themeSystem = {};
       name: 'ButterDogCo', fileName: 'butterdogco.css'
     },
     {
-      name: 'Spooky Hacker', fileName: 'spooky hacker.css'
+      name: 'Spooky Hacker', fileName: 'spooky-hacker.css'
     },
   ];
   const themeSaveKey = 'activeTheme';
