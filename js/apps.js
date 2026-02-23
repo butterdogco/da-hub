@@ -36,18 +36,10 @@ const apps = [
     Added: new Date("May 3, 2025")
   },
   {
-    Name: "1v1.LOL",
-    Id: "1v1lol",
-    Folder: "1v1LOL",
-    Thumbnail: "thumbnail.jpg",
-    Added: new Date("January 20, 2026"),
-    Genres: ["shooter", "pvp", "building", "multiplayer"]
-  },
-  {
     Name: "2048",
     Id: "2048",
     Mobile: true,
-    Thumbnail: "thumbnail.jpg",
+    Thumbnail: "thumbnail.png",
     Added: new Date("November 15, 2021"),
     Genres: ["puzzle", "numbers", "math"]
   },
@@ -78,7 +70,7 @@ const apps = [
     Id: "ab",
     Folder: "../resources/ruffle",
     Index: "index.html?file=angry-birds-chrome",
-    Thumbnail: "thumbnails/angrybirds.jpg",
+    Thumbnail: "thumbnails/angrybirds.png",
     Mobile: true,
     Genres: ["physics", "puzzle"],
     Related: ["rovio", "bad piggies", "flash"],
@@ -101,7 +93,7 @@ const apps = [
     Folder: "../resources/ruffle",
     Index: "index.html?file=angry-birds-rio",
     Mobile: true,
-    Thumbnail: "thumbnails/angrybirds-rio.jpg",
+    Thumbnail: "thumbnails/angrybirds-rio.png",
     Genres: ["physics", "puzzle"],
     Related: ["rovio", "bad piggies", "flash"],
     Added: new Date("May 4, 2025")
@@ -120,15 +112,6 @@ const apps = [
     Thumbnail: "thumbnail.png",
     Added: new Date("March 23, 2023"),
     Genres: ["water slide", "arcade"],
-  },
-  {
-    Name: "Awesome Tanks 2",
-    Folder: "Awesome Tanks/2",
-    Id: "awesometanks2",
-    Thumbnail: "thumbnail.jpg",
-    Mobile: true,
-    Genres: ["tanks", "shooter", "multiplayer"],
-    Added: new Date("December 19, 2025")
   },
   {
     Name: "Bad Piggies",
@@ -236,13 +219,6 @@ const apps = [
     Id: "bloxorz",
     Thumbnail: "thumbnail.jpeg",
     Genres: ["puzzle", "blocks", "physics"]
-  },
-  {
-    Name: "Buckshot Roulette",
-    Id: "buckshot",
-    Thumbnail: "thumbnail.jpg",
-    Added: new Date("December 19, 2025"),
-    Genres: ["shooter", "pvp", "multiplayer"]
   },
   {
     Name: "Cartoon Mini Racing",
@@ -468,13 +444,6 @@ const apps = [
     Mobile: true,
   },
   {
-    Name: "Football Bros",
-    Id: "footballbros",
-    Thumbnail: "thumbnail.jpg",
-    Added: new Date("December 10, 2025"),
-    Genres: ["sports", "soccer", "multiplayer"],
-  },
-  {
     Name: "Friday Night Funkin'",
     Id: "fnf",
     Folder: "Friday Night Funkin",
@@ -543,13 +512,6 @@ const apps = [
     Thumbnail: "thumbnail.jpg",
     Genres: ["shooter", "pvp"],
     Related: ["ragdoll archers"]
-  },
-  {
-    Name: "Gunspin",
-    Id: "gunspin",
-    Thumbnail: "thumbnail.jpg",
-    Added: new Date("February 3, 2026"),
-    Genres: ["shooter", "arcade"]
   },
   {
     Name: "Happy Wheels",
