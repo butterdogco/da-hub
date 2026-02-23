@@ -1,17 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
-
-:root {
-  --accent: rgb(88, 159, 217);
-  --accentLight: rgb(115, 186, 245);
-  --accentTransparent: rgba(88, 159, 217, 0.5);
-  --accentTransparent2: rgba(88, 159, 217, 0.2);
-}
+@import url("./elements/particles.css");
 
 @keyframes particleAnimation {
   0% {
     top: -50px;
     rotate: 0deg;
   }
+
   100% {
     top: 100vh;
     rotate: 360deg;
@@ -22,9 +16,11 @@
   0% {
     text-shadow: 0 0 20px var(--accent), 0 0 20px var(--accent);
   }
+
   50% {
     text-shadow: 0 0 40px var(--accent), 0 0 40px var(--accent);
   }
+
   100% {
     text-shadow: 0 0 20px var(--accent), 0 0 20px var(--accent);
   }
@@ -34,6 +30,7 @@
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
@@ -44,6 +41,7 @@
     opacity: 0;
     transform: translateX(-50%);
   }
+
   100% {
     opacity: 1;
     transform: translateX(0);
@@ -54,20 +52,66 @@
   0% {
     opacity: 1;
   }
+
   100% {
     opacity: 0;
     transform: translateX(-50%);
   }
 }
 
-.blackBGGradientTop {
-  background: rgb(2,0,36);
-  background: linear-gradient(0deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,.7) 100%);
+@keyframes updateAvailable {
+  0% {
+    filter: brightness(100%);
+  }
+
+  50% {
+    filter: brightness(80%);
+  }
+
+  100% {
+    filter: brightness(100%);
+  }
 }
 
-.blackBGGradientBottom, .topHeader .buttons a {
-  background: rgb(2,0,36);
-  background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,.7) 100%);
+@keyframes spin {
+  0% {
+    rotate: 0deg;
+  }
+
+  100% {
+    rotate: 360deg;
+  }
+}
+
+@keyframes appOpenImage {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    width: 100vw;
+    height: 100vh;
+    left: 50%;
+    top: 50%;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.blackBGGradientTop {
+  background: rgb(2, 0, 36);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, .7) 100%);
+}
+
+.blackBGGradientBottom,
+.topHeader .buttons a {
+  background: rgb(2, 0, 36);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, .7) 100%);
 }
 
 * {
@@ -94,8 +138,8 @@ hr {
 }
 
 html {
-  background-color: rgb(62, 36, 60);
-  background-image: url("https://raw.githubusercontent.com/butterdogco/da-hub/refs/heads/main/img/background.png");
+  background-color: var(--mainBackground);
+  background-image: var(--mainBackgroundImage);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center right;
@@ -105,12 +149,12 @@ html {
 
 body {
   background: transparent;
-  padding-bottom: 30px;
-  font-family: "Inter", sans-serif;
-  color: white;
+  padding-bottom: 50px;
+  font-family: var(--font), sans-serif;
+  color: var(--textColor1);
   margin: 0;
   width: 100vw;
-  min-height: 100vh;
+  min-height: calc(100vh - 50px);
   overflow-x: hidden;
 }
 
@@ -126,7 +170,7 @@ body {
   height: 100vh;
   top: 0;
   left: 0;
-  z-index: 0;
+  z-index: -1;
 }
 
 .apps.Square {
@@ -155,13 +199,19 @@ body {
   width: 100%;
   animation: fadeIn 0.5s ease;
 
-  .appsButton, .placeholder {
+  .appsButton,
+  .placeholder {
+    --buttonPadding: 6px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     width: 340px;
     height: 200px;
     font-weight: bold;
     text-align: center;
     font-size: 25px;
-    background-color: rgba(0,0,0,0.3);
+    background-color: rgba(0, 0, 0, 0.3);
     cursor: pointer;
     transition: 0.15s ease;
     overflow: hidden;
@@ -169,23 +219,21 @@ body {
     flex-grow: 0.5;
     margin: 8px;
     padding: 0;
-    border-radius: 8px;
+    border-radius: var(--borderRadiusTiny);
     position: relative;
     animation: fadeIn 0.2s ease;
 
     p.appName {
-      position: relative;
-      margin: 140px 15px 20px 15px;
-      z-index: 2;
       text-align: center;
       font-size: 90%;
       text-overflow: ellipsis;
-      max-width: 100%;
+      max-width: calc(100% - (var(--buttonPadding) * 2));
       pointer-events: none;
       overflow: hidden;
       white-space: nowrap;
+      align-self: center;
     }
-    
+
     img.thumbnail {
       position: absolute;
       top: 50%;
@@ -196,56 +244,63 @@ body {
       height: 105%;
       opacity: 0;
       transition: 0.5s ease;
-      mask-image: linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 75%, rgba(0,0,0,0.19) 100%);
+      mask-image: linear-gradient(45deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.6) 75%, rgba(0, 0, 0, 0.19) 100%);
     }
 
     div.overlay {
-      position: relative;
+      align-self: flex-end;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-content: center;
+      width: calc(50% - var(--buttonPadding));
+      margin-top: var(--buttonPadding);
+      margin-right: var(--buttonPadding);
     }
 
     button.favorite {
-      --width: 50px;
-      position: absolute;
-      float: right;
+      --size: 50px;
       background-color: transparent;
       background-image: url(https://raw.githubusercontent.com/butterdogco/da-hub/refs/heads/main/img/icons/star_hollow.svg);
       background-repeat: no-repeat;
       background-size: cover;
       border: none;
-      margin-left: calc(50% - var(--width));
-      width: var(--width);
-      height: var(--width);
+      width: var(--size);
+      height: var(--size);
       opacity: 0.8;
       color: white;
       mask-image: none;
       cursor: pointer;
-      z-index: 2;
     }
 
     /* When not favorited (show full star) */
-    button.favorite:hover, button.favorite:focus, button.favorite.favorited {
+    button.favorite:hover,
+    button.favorite:focus,
+    button.favorite.favorited {
       opacity: 1;
       background-image: url(https://raw.githubusercontent.com/butterdogco/da-hub/refs/heads/main/img/icons/star_solid.svg);
     }
 
     /* When favorited (show empty star) */
-    button.favorited:hover, button.favorited:focus {
+    button.favorited:hover,
+    button.favorited:focus {
       background-image: url(https://raw.githubusercontent.com/butterdogco/da-hub/refs/heads/main/img/icons/star_hollow.svg);
     }
 
     div.tags {
-      position: absolute;
       display: inline-flex;
       flex-wrap: wrap;
       justify-content: center;
+      align-content: center;
+      gap: 5px;
+      height: 100%;
       transform: translateX(-50%);
 
       p {
         background: rgba(255, 255, 255, 0.8);
         padding: 12px;
-        margin-right: 5px;
-        margin-left: 5px;
-        border-radius: 12vh;
+        margin: 0;
+        border-radius: var(--borderRadiusRound);
         color: black;
         text-align: center;
         font-size: 16px;
@@ -260,27 +315,31 @@ body {
 
       p.fixed {
         background: rgba(128, 255, 93, 0.8);
-        color: rgb(0, 0, 0);
       }
 
       p.updated {
         background: rgba(93, 215, 255, 0.8);
-        color: rgb(0, 0, 0);
+      }
+
+      p.wip {
+        background: rgba(255, 165, 0, 0.8);
       }
     }
   }
-  
-  .appsButton:hover, .appsButton:focus, .appsButton:focus-within {
+
+  .appsButton:hover,
+  .appsButton:focus,
+  .appsButton:focus-within {
     border: var(--accent) 3px solid;
     transform: scale(1.05);
-    
+
     img.thumbnail {
-      mask-image: linear-gradient(45deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.6) 75%, rgba(255,255,255,0.2) 100%);
+      mask-image: linear-gradient(45deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.6) 75%, rgba(255, 255, 255, 0.2) 100%);
     }
   }
 
   div.placeholder {
-    background-color: rgba(0,0,0,0.15);
+    background-color: rgba(0, 0, 0, 0.15);
     border: 3px transparent;
     flex-grow: 1;
     line-height: 200px;
@@ -299,11 +358,6 @@ body {
   }
 }
 
-/* #newApps:has([style="display: none"]) > #favorite {
-  left: 50%;
-  margin-top: 0;
-} */
-
 #favorite {
   float: right;
 }
@@ -321,12 +375,13 @@ apps.smallApps {
     width: 250px;
 
     * {
-      size-adjust: 50%;
+      font-size: 80%;
     }
   }
 }
 
-.name, #logo {
+.name,
+#logo {
   color: var(--accentLight);
   text-shadow: 0 0 20px var(--accent), 0 0 30px var(--accent);
   animation: logoAnim 2s ease-in-out;
@@ -338,7 +393,8 @@ p.name {
   display: inline-flex;
 }
 
-p, h1 {
+p,
+h1 {
   cursor: default;
 }
 
@@ -351,6 +407,11 @@ h1 {
   text-align: center;
   font-weight: normal;
 
+  b,
+  span {
+    pointer-events: none;
+  }
+
   i {
     font-size: 16px;
     font-weight: normal;
@@ -358,6 +419,34 @@ h1 {
 
   b {
     color: white;
+  }
+}
+
+.categorySubheader {
+  text-align: center;
+  font-size: 16px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  color: var(--textColor2);
+
+  select {
+    background-color: var(--accentTransparent1);
+    border: 3px solid var(--accentTransparent1);
+    border: none;
+    border-radius: var(--borderRadiusSlight);
+    padding: 4px 6px 4px 6px;
+    color: inherit;
+    outline: transparent;
+    transition: 0.15s ease;
+
+    option {
+      background: rgb(26, 32, 48);
+    }
+
+    &:focus,
+    &:hover {
+      background-color: var(--accent);
+    }
   }
 }
 
@@ -379,21 +468,29 @@ h1 {
   left: 50%;
   transform: translateX(-50%);
   cursor: default;
-  /* background: rgba(0,0,0,0.5); */
-  border: rgba(255,255,255,0.5) 2px solid;
+  border: var(--accent) 3px solid;
   border-bottom: none;
   border-radius: 12px 12px 0 0;
   padding: 10px;
   margin: 0;
   z-index: 3;
   text-wrap: nowrap;
-}
 
-.disclaimer a {
-  color: white;
+  a {
+    color: white;
+    transition: 0.15s ease;
+
+    &:hover {
+      color: var(--accentLight);
+    }
+  }
 }
 
 .topHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   width: 100vw;
   min-height: 35px;
   position: fixed;
@@ -407,6 +504,15 @@ h1 {
   padding-right: 5px;
   z-index: 3;
   margin: 0;
+
+  .bgFilter {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    /* Backdrop filter comes from the backdropBlur class */
+  }
 
   #latestUpdate {
     display: inline-block;
@@ -429,20 +535,18 @@ h1 {
     left: 50%;
     transform: translateX(-50%);
     top: 100%;
-    
+
     a {
       flex-grow: 1;
       flex-shrink: 1;
       margin-bottom: 15px;
       margin-right: 5px;
       margin-left: 5px;
-      color: rgba(255,255,255,0.8);
-      border-top: rgba(23, 23, 23, 0.5) 3px solid;
-      border-bottom: var(--accent) 3px solid;
-      border-right: var(--accent) 3px solid;
-      border-left: var(--accent) 3px solid;
-      border-bottom-right-radius: 20px;
-      border-bottom-left-radius: 20px;
+      color: rgba(255, 255, 255, 0.8);
+      border: var(--accent) 3px solid;
+      border-top: 3px solid transparent;
+      border-bottom-right-radius: var(--borderRadiusSlight);
+      border-bottom-left-radius: var(--borderRadiusSlight);
       cursor: pointer;
       padding-top: 10px;
       padding-bottom: 10px;
@@ -454,7 +558,7 @@ h1 {
 
     a:hover {
       color: white;
-      background-color: var(--accentTransparent);
+      background-color: var(--accentTransparent1);
       border-top-color: var(--accentLight);
     }
   }
@@ -462,27 +566,34 @@ h1 {
   #logo {
     position: absolute;
     left: 10px;
-    top: -2px;
-    height: 45px;
+    font-size: 35px;
     background: transparent;
-    font-size: 30px;
     text-align: center;
 
     p {
+      margin: 0;
       font-weight: bold;
-      transform: translateY(-50%);
     }
   }
 
-  #settingsButton {
+  .headerButtons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
     position: absolute;
     right: 10px;
-    top: 5px;
-    height: 45px;
-    width: 45px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .headerButton {
     background: none;
     cursor: pointer;
     border: none;
+    width: 50px;
+    height: 50px;
     transition: 0.2s ease;
 
     img {
@@ -490,31 +601,61 @@ h1 {
       height: 100%;
       width: 100%;
     }
+
+    &:hover {
+      filter: brightness(80%);
+    }
   }
 
-  #settingsButton:hover {
-    filter: brightness(80%);
+  #updateButton {
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 45px;
+    width: 140px;
+    border: 3px solid var(--accent);
+    border-radius: var(--borderRadiusTiny);
+    animation: updateAvailable 2s ease infinite;
+
+    img {
+      width: auto;
+      aspect-ratio: 1;
+    }
+
+    &.visible {
+      display: inline-flex;
+    }
+
+    &:hover,
+    &:focus {
+      animation: none;
+
+      img {
+        animation: spin 1s linear infinite;
+      }
+    }
   }
 }
-
 
 #searchForm {
   margin-top: 5px;
   font-size: 16px;
   display: inline-flex;
 
-  input, #clear {
+  input,
+  .clear {
     font-size: inherit;
   }
 
   input {
     border: rgba(0, 0, 0, 0.5) 3px solid;
     border-right: none;
-    background: rgba(0,0,0,0.5);
-    background: linear-gradient(0deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,.7) 100%);
+    background: rgba(0, 0, 0, 0.5);
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, .7) 100%);
     text-align: center;
     padding: 8px;
-    border-radius: 2vh 0 0 2vh;
+    border-radius: var(--borderRadiusRound) 0 0 var(--borderRadiusRound);
     transition: 0.15s ease;
     width: 300px;
     max-width: 77vw;
@@ -524,41 +665,43 @@ h1 {
     outline: none;
   }
 
-  input:focus, input:focus + #clear {
+  input:focus,
+  input:focus+.clear {
     border-color: var(--accent);
-    background-color: var(--accentTransparent);
+    background-color: var(--accentTransparent1);
   }
 
-  input:hover, input:hover + #clear {
-    background-color: var(--accentTransparent);
+  input:hover,
+  input:hover+.clear {
+    background-color: var(--accentTransparent1);
   }
 
-  #clear {
-    background: rgba(0,0,0,0.5);
-    background: linear-gradient(0deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,.7) 100%);
-    border: rgba(0,0,0,0.5) 3px solid;
+  .clear {
+    background: rgba(0, 0, 0, 0.5);
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, .7) 100%);
+    border: rgba(0, 0, 0, 0.5) 3px solid;
     border-left: none;
     width: 36px;
     padding: 8px;
-    border-radius: 0 2vh 2vh 0;
+    border-radius: 0 var(--borderRadiusRound) var(--borderRadiusRound) 0;
     transition: 0.15s ease;
     font-weight: bold;
     cursor: pointer;
+
+    &:hover {
+      border-color: var(--accent);
+      background-color: var(--accentTransparent1);
+      color: var(--accentLight);
+    }
   }
 
-  #clear:hover {
-    border-color: var(--accent);
-    background-color: var(--accentTransparent);
-    color: var(--accentLight);
-  }
-
-  #results {
+  .results {
     color: white;
     position: absolute;
     left: 50%;
     transform: translate(-50%, -200%);
   }
-  
+
   input::selection {
     background: rgba(73, 172, 253, 0.5);
   }
@@ -572,7 +715,8 @@ h1 {
   left: 0;
   z-index: 5;
   background-color: black;
-  
+  animation: fadeIn 0.3s ease;
+
   iframe {
     width: 100vw;
     height: 100vh;
@@ -582,32 +726,32 @@ h1 {
     outline: none;
     border: none;
   }
-  
+
   .appButtons {
     position: absolute;
     top: 0;
     left: 0;
     display: flex;
     flex-direction: column;
+    gap: 8px;
     pointer-events: none;
-    
+
     button {
       transform: translateX(-50%);
       padding: 12px;
-      border-radius: 4vh;
-      background: rgba(0,0,0,0.8);
+      border-radius: var(--borderRadiusSlight);
+      background: rgba(0, 0, 0, 0.8);
       border: 3px solid var(--accentTransparent2);
       color: white;
       cursor: pointer;
       transition: 0.15s ease;
       opacity: 0.5;
-      margin-bottom: 8px;
       pointer-events: all;
     }
-    
+
     button:hover {
       transform: translateX(0) !important;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0, 0, 0, 0.5);
       border: 3px solid var(--accent);
       margin-left: 5px;
       opacity: 1;
@@ -620,11 +764,11 @@ body.flipInAppButtons {
     .appButtons {
       left: auto;
       right: 0;
-  
+
       button {
         transform: translateX(50%);
       }
-      
+
       button:hover {
         margin-left: unset;
         margin-right: 5px;
@@ -643,10 +787,10 @@ div.notifications {
 
   p.notification {
     background-color: var(--accent);
-    background: linear-gradient(90deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,.6) 100%);
-    border-top: 3px solid var(--accentTransparent);
-    border-right: 3px solid var(--accentTransparent);
-    border-bottom: 3px solid var(--accentTransparent);
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, .6) 100%);
+    border-top: 3px solid var(--accentTransparent1);
+    border-right: 3px solid var(--accentTransparent1);
+    border-bottom: 3px solid var(--accentTransparent1);
     padding: 8px;
     border-radius: 0 8px 8px 0;
     animation: notificationFadeIn 0.5s ease;
@@ -655,64 +799,6 @@ div.notifications {
     max-width: 90vw;
     z-index: 99;
   }
-}
-
-.contextMenu {
-  left: 0;
-  top: 0;
-  position: absolute;
-  padding: 4px;
-  background: var(--accentTransparent2);
-  border-radius: 12px;
-  opacity: 1;
-  transition: 0.15s ease;
-  transition-property: opacity;
-  z-index: 999;
-
-  .option {
-    cursor: pointer;
-    min-width: 200px;
-    margin: 3px;
-    padding: 16px;
-    transition: 0.15s ease;
-    border-radius: inherit;
-    background: transparent;
-    border: none;
-    text-align: left;
-    font-size: 16px;
-    backdrop-filter: brightness(50%);
-  }
-
-  .option:first-child:not(:only-child) {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    margin-bottom: 0;
-  }
-
-  .option:not(:first-child):not(:last-child):not(:only-child) {
-    border-radius: 0;
-    margin-bottom: 0;
-    margin-top: 0;
-  }
-
-  .option:last-child:not(:only-child) {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    margin-top: 0;
-  }
-
-  .option:hover {
-    backdrop-filter: brightness(120%);
-  }
-
-  .option:active {
-    backdrop-filter: 130%;
-  }
-}
-
-.contextMenu.hide {
-  pointer-events: none;
-  opacity: 0;
 }
 
 .speedrunTimer {
@@ -762,24 +848,11 @@ div.notifications {
 
 .appSizes {
   text-align: center;
-  background: var(--accentTransparent);
+  background: var(--accentTransparent1);
   border: 3px solid var(--accent);
   border-radius: 12px;
   margin-left: 50%;
   transform: translateX(-50%);
-}
-
-#particlesContainer {
-  .particle {
-    position: fixed;
-    width: 50px;
-    height: 50px;
-    background: transparent;
-    pointer-events: none;
-    z-index: 1;
-    opacity: .5;
-    /* animation: particleAnimation 1s linear; */
-  }
 }
 
 .header {
@@ -799,8 +872,26 @@ div.notifications {
   }
 }
 
+#appOpenImage {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  border-radius: 12px;
+  box-shadow: 0 0 20px var(--accent), 0 0 30px var(--accent);
+  z-index: 10;
+
+  &.visible {
+    display: block;
+    opacity: 0;
+    animation: appOpenImage 0.5s ease 1;
+  }
+}
+
 @media (max-width: 900px) {
-  #latestUpdate { 
+  #latestUpdate {
     display: none !important;
   }
 
@@ -830,6 +921,46 @@ div.notifications {
     word-wrap: break-word;
     white-space: normal;
     width: max-content;
+  }
+}
+
+.promptBox {
+  min-width: 20vw;
+  max-width: 400px;
+  height: auto !important;
+  padding-bottom: var(--padding) !important;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 12px;
+
+    button {
+      background: var(--accentTransparent1);
+      border: none;
+      border-radius: var(--borderRadiusTiny);
+      text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+      padding: 8px 12px;
+      font-size: 16px;
+      flex-grow: 1;
+      cursor: pointer;
+      transition: 0.15s ease;
+    }
+
+    button:hover {
+      background: var(--accent);
+    }
   }
 }
 

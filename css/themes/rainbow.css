@@ -1,0 +1,48 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+    --accentHue: 210;
+    --accent: hsl(var(--accentHue), 60%, 50%);
+    --accentLight: hsl(var(--accentHue), 60%, 70%);
+
+    --accentTransparent1: hsla(var(--accentHue), 60%, 50%, 0.5);
+    --accentTransparent2: hsla(var(--accentHue), 60%, 50%, 0.2);
+
+    --accentDarkBackgroundTransparent1: rgba(94, 101, 126, 0.637);
+    --accentDarkBackgroundTransparent2: rgba(31, 35, 48, 0.6);
+
+    --mainBackground: rgb(30, 30, 30);
+    --mainBackgroundImage: url("../..//img/backgrounds/Multi-color.png");
+
+    --font: 'Inter', sans-serif;
+
+    --textColor1: white;
+    --textColor2: rgb(230, 230, 230);
+
+    --textColor2Transparent: rgba(230, 230, 230, 0.8);
+
+    --linkColor1: hsl(var(--accentHue), 60%, 50%);
+    
+    --borderRadiusTiny: 6px;
+    --borderRadiusSlight: 16px;
+    --borderRadiusRound: 30vh;
+    
+    --starNoFill: url("../img/icons/star_hollow.svg");
+    --starFill: url("../img/icons/star_solid.svg");
+
+    --backdropBlur: blur(10px) brightness(0.9);
+    --noBlurFilter: brightness(0.2);
+
+    animation: rainbowHue 5s linear infinite;
+}
+
+@keyframes rainbowHue {
+    0% { --accentHue: 0; }
+    14.2857% { --accentHue: 60; }
+    28.5714% { --accentHue: 120; }
+    42.8571% { --accentHue: 180; }
+    57.1429% { --accentHue: 240; }
+    71.4286% { --accentHue: 300; }
+    85.7143% { --accentHue: 330; }
+    100% { --accentHue: 360; }
+}

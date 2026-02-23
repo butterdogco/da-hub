@@ -1,29 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <title>Google Sites</title>
-    <link rel="shortcut icon" href="https://ssl.gstatic.com/atari/images/public/sites-favicon-2023q4.ico">
-    <link rel="stylesheet" href="css/index.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="noindex,none,noimageindex" />
-    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta charset="utf-8">
+    <link rel="shortcut icon" href="https://ssl.gstatic.com/atari/images/public/sites-favicon-2023q4.ico">
+    <link rel="stylesheet" href="css/themes/blue.css"> <!-- Fallback theme while JS loads -->
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" id="themeStylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,none,noimageindex">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 
 <body>
-    <script src="//cdn.jsdelivr.net/npm/eruda"></script>
-    <script>
-        let __erudaOpened = false;
-        document.addEventListener("keydown", (event) => {
-            if (__erudaOpened == true) return;
-            if (event.key == 'i' && event.altKey && event.ctrlKey) {
-                __erudaOpened = true;
-                eruda.init();
-            }
-        });
-    </script>
-
     <main id="main">
         <button class="openButton" id="oMSB">
             <div class="repeatingImage"></div>
@@ -31,8 +22,27 @@
         </button>
     </main>
 
+    <script src="js/particles.js"></script>
+    <script src="js/theme.js"></script>
     <script src="js/utils.js" type="module"></script>
     <script src="js/index.js" type="module"></script>
+    <script type="module">
+        const erudaUrl = "https://cdn.jsdelivr.net/npm/eruda";
+        let __erudaOpened = false;
+        document.addEventListener("keydown", (event) => {
+            if (__erudaOpened == true) return;
+            if (event.key == 'i' && event.altKey && event.ctrlKey) {
+                __erudaOpened = true;
+                const script = document.createElement("script");
+                script.onload = () => {
+                    eruda.init();
+                };
+                script.src = erudaUrl;
+                document.body.appendChild(script);
+            }
+        });
+    </script>
+    <script async src="https://butterdogco.statuspage.io/embed/script.js"></script>
 </body>
 
 </html>

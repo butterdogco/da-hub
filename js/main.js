@@ -1,10 +1,11 @@
 const appsDiv = document.getElementById("apps");
 const summerInfoDiv = document.getElementById("summerInfo");
-const searchForm = document.getElementById("searchForm");
-const searchInput = document.getElementById("searchInput");
-const resultsText = document.getElementById("results");
-const clear = document.getElementById("clear");
 const appSizesSelect = document.getElementById("appSizes");
+const updateAvailableButton = document.getElementById("updateButton");
+const overlayBackground = document.getElementById("overlayBackground");
+const recommendationsHeader = document.querySelector(".categoryHeader.weeklyRecommendations");
+const changelogFrame = document.getElementById("changelogFrame");
+const changelogContent = document.getElementById("changelogContent");
 const daHubSettingsPrefix = "settings-";
 let appOpen = false;
 let newApps = 0;
@@ -13,6 +14,12 @@ let sectionCount = {};
 let currentAppSize = "default";
 let mobileMode = ["true", true].includes(localStorage.getItem(daHubSettingsPrefix + "MobileMode") || "nope");
 let currentApp;
+let scrollPosition;
+let newVersion;
+
+const setParticlesEnabled = particles.setParticlesEnabled;
+const getAppRecommendations = personalization.getAppRecommendations;
+const getExperimentStatus = personalization.getExperimentStatus;
 
 // TODO: Import fetchData and openWindow from utils.js
 
@@ -34,12 +41,12 @@ async function fetchData(url) {
 /**
  * Opens a new about:blank window, supports creating an iframe, or fetching the source of the provided page.
  */
-async function openWindow(url, title, icon, code, removeCurrent) {
-  var blank = window.open();
+async function openWindow(url, title, icon, code, removeCurrent, notice) {
+  const blank = window.open();
   if (code == false || code == undefined) {
-    var link = blank.document.createElement('link');
-    var style = blank.document.createElement('style');
-    var meta = blank.document.createElement('meta');
+    const link = blank.document.createElement('link');
+    const style = blank.document.createElement('style');
+    const meta = blank.document.createElement('meta');
 
     link.rel = "shortcut icon";
     link.href = icon || "";
@@ -55,7 +62,101 @@ async function openWindow(url, title, icon, code, removeCurrent) {
     blank.document.body.appendChild(iframe);
   } else {
     blank.document.open();
-    blank.document.write("<h1 style='text-align:center;position:fixed;top:5px;font-family:sans-serif;' class='noticeElement'>Please wait...<br><p>Fetching the page...</p></h1>")
+    blank.document.write(`
+      <div class="notifications" id="notifications"></div>
+      <h1 style='text-align:center;position:fixed;top:5px;font-family:sans-serif;' class='noticeElement'>Please wait...<br><p>Fetching the page...</p></h1>
+      `);
+    const style = blank.document.createElement("style");
+    style.innerHTML = `
+    @import url('${window.location.origin}/css/themes/blue.css');
+
+    @keyframes notificationFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateX(-50%);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes notificationFadeOut {
+      0% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateX(-50%);
+      }
+    }
+
+    body {
+      background: white;
+      font-family: var(--font), sans-serif;
+      color: var(--textColor1);
+      margin: 0;
+    }
+
+    .backdropBlur {
+      backdrop-filter: var(--backdropBlur);
+      -webkit-backdrop-filter: var(--backdropBlur);
+    }
+
+    .backdropBlurChildren * {
+      backdrop-filter: var(--backdropBlur);
+      -webkit-backdrop-filter: var(--backdropBlur);
+    }
+
+    div.notifications {
+      position: fixed;
+      top: 5%;
+      justify-content: center;
+      width: 100vw;
+      pointer-events: none;
+      z-index: 99;
+
+      p.notification {
+        background-color: var(--accent);
+        background: linear-gradient(90deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, .6) 100%);
+        border-top: 3px solid var(--accentTransparent1);
+        border-right: 3px solid var(--accentTransparent1);
+        border-bottom: 3px solid var(--accentTransparent1);
+        padding: 8px;
+        border-radius: 0 8px 8px 0;
+        animation: notificationFadeIn 0.5s ease;
+        text-align: center;
+        width: 400px;
+        max-width: 90vw;
+        z-index: 99;
+      }
+    }
+    `;
+    blank.document.head.appendChild(style);
+
+    if (notice && notice.length > 0) {
+      const messagesScript = blank.document.createElement("script");
+      messagesScript.id = "messagesScript";
+      messagesScript.src = window.location.origin + "/js/messages.js";
+      blank.document.body.appendChild(messagesScript);
+
+      const noticeScript = blank.document.createElement("script");
+      noticeScript.innerHTML = `
+        const messagesScript = document.getElementById("messagesScript");
+        const notice = () => {
+          notify({ Text: "${notice.replace(/"/g, '\\"')}", ShowTime: 5000 });
+        };
+        if (messagesScript.complete) {
+          notice();
+        } else {
+          messagesScript.onload = notice;
+        }
+      `;
+      blank.document.body.appendChild(noticeScript);
+    }
+
     fetchData(url).then(html => {
       if (html) {
         const parser = new DOMParser();
@@ -87,66 +188,129 @@ async function openWindow(url, title, icon, code, removeCurrent) {
  */
 async function openSite(url) {
   appOpen = true;
-  const originalOption = particlesEnabled;
-  particlesEnabled = false;
-  if (document.getElementById("appDiv")) {
-    document.getElementById("appDiv").remove();
-  }
+  scrollPosition = window.scrollY;
+  setParticlesEnabled(false);
+
+  const existingAppDiv = document.getElementById("appDiv");
+  if (existingAppDiv) existingAppDiv.remove();
 
   const appDiv = document.createElement('div');
-  const buttonDiv = document.createElement('div');
-  const closeButton = document.createElement('button');
-  const timerButton = document.createElement('button');
-  const settingsButton = document.createElement('button');
-  const iframe = document.createElement('iframe');
-
   appDiv.id = "appDiv";
-  buttonDiv.classList.add("appButtons");
-  closeButton.innerText = await getElementLanguageData("inGameCloseButton");
-  closeButton.setAttribute("data-lang", "inGameCloseButton");
-  timerButton.innerText = await getElementLanguageData("inGameTimerButton");
-  timerButton.className = "speedrunTimerButton";
-  timerButton.setAttribute("data-lang", "inGameTimerButton");
-  if (!timerEnabled) { timerButton.style.display = "none"; }
-  settingsButton.innerText = await getElementLanguageData("inGameSettingsButton");
-  settingsButton.className = "appSettingsButton";
-  settingsButton.setAttribute("data-lang", "inGameSettingsButton");
+  
+  const iframe = document.createElement('iframe');
   iframe.src = `${url}`;
   iframe.className = "appIframe";
-
+  appDiv.appendChild(iframe);
+  
+  const buttonDiv = document.createElement('div');
+  buttonDiv.classList.add("appButtons");
+  appDiv.appendChild(buttonDiv);
+  
+  const closeButton = document.createElement('button');
+  closeButton.innerText = await getElementLanguageData("inGameCloseButton");
+  closeButton.setAttribute("data-lang", "inGameCloseButton");
   closeButton.addEventListener('click', async () => {
     if (confirm(await getElementLanguageData("appCloseConfirm")) === true) {
       document.getElementById("main").style.display = "block";
       appDiv.remove();
       appOpen = false;
+      window.scrollTo(0, scrollPosition);
       closeSpeedrunTimer();
-      particlesEnabled = originalOption;
-      if (particlesEnabled == true) {
-        createParticles();
-      }
+      setParticlesEnabled(true);
     }
   });
-
-  timerButton.addEventListener('click', function () {
-    toggleSpeedrunTimer();
-  });
-
-  settingsButton.addEventListener('click', toggleSettings);
-
-  appDiv.appendChild(iframe);
-  appDiv.appendChild(buttonDiv);
   buttonDiv.appendChild(closeButton);
-  buttonDiv.appendChild(settingsButton);
+  
+  const timerButton = document.createElement('button');
+  timerButton.innerText = await getElementLanguageData("inGameTimerButton");
+  timerButton.className = "speedrunTimerButton";
+  timerButton.setAttribute("data-lang", "inGameTimerButton");
+  timerButton.addEventListener('click', toggleSpeedrunTimer);
+  if (!timerEnabled) timerButton.style.display = "none";
   buttonDiv.appendChild(timerButton);
+  
+  const settingsButton = document.createElement('button');
+  settingsButton.innerText = await getElementLanguageData("inGameSettingsButton");
+  settingsButton.className = "appSettingsButton";
+  settingsButton.setAttribute("data-lang", "inGameSettingsButton");
+  settingsButton.addEventListener('click', toggleSettings);
+  buttonDiv.appendChild(settingsButton);
+
+  const reloadButton = document.createElement('button');
+  reloadButton.innerText = await getElementLanguageData("inGameReloadButton");
+  reloadButton.id = "inGameReloadButton";
+  reloadButton.setAttribute("data-lang", "inGameReloadButton");
+  reloadButton.addEventListener('click', () => iframe.contentWindow.location.reload());
+  if (!window.iframeReloadEnabled) reloadButton.style.display = "none";
+  buttonDiv.appendChild(reloadButton);
+
   document.body.appendChild(appDiv);
   document.getElementById("main").style.display = "none";
+}
 
+async function getChangelogContent() {
   try {
-    var event = new CustomEvent('appOpened', { frame: iframe })
-    window.parent.document.dispatchEvent(event);
-  } catch (err) {
-    // do nothing
+    const response = await fetch('documents/changelog.md');
+    const data = await response.text();
+    return marked.parse(data);
+  } catch (e) {
+    return "<p>Failed to load changelog.</p>";
   }
+}
+
+let changelogOverlayClickEvent = null;
+let changelogLoaded = false;
+/**
+ * Toggles the changelog overlay.
+ */
+function toggleChangelog() {
+  const open = !changelogFrame.classList.contains("open");
+  changelogFrame.classList.toggle("open");
+  overlayBackground.classList.toggle("open", open);
+
+  if (open == true && !changelogOverlayClickEvent) {
+    changelogOverlayClickEvent = toggleChangelog;
+    overlayBackground.addEventListener("click", changelogOverlayClickEvent);
+    if (!changelogLoaded) {
+      getChangelogContent().then((content) => {
+        changelogContent.innerHTML = content;
+        changelogLoaded = true;
+      });
+    }
+  } else if (changelogOverlayClickEvent) {
+    overlayBackground.removeEventListener("click", changelogOverlayClickEvent);
+    changelogOverlayClickEvent = null;
+  }
+}
+
+/**
+ * Returns whether or not the current window has the iframe=true parameter.
+ */
+function getInIframe() {
+  try {
+    const params = new URL(document.location).searchParams;
+    const iframe = params.get("iframe");
+    return (iframe == "true" && iframe != null);
+  } catch (e) {
+    return true;
+  }
+}
+
+/**
+ * Checks whether or not the window is in an iframe, and corrects the URL if needed.
+ */
+function checkInFrame() {
+  // if (getInIframe() == false) {
+  //   document.body.innerHTML = "";
+  //   window.location.href = `home.html?iframe=true`;
+  // } else {
+  window.addEventListener('beforeunload', (event) => {
+    event.returnValue = "Are you sure you want to leave?";
+  });
+  document.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+  }, false);
+  // }
 }
 
 /**
@@ -165,18 +329,19 @@ function isMobile() {
 async function mobileDetected() {
   let onMobile = confirm(await getElementLanguageData("mobileDetectPrompt"));
   mobileMode = onMobile;
-  localStorage.setItem(daHubSettingsPrefix + "MobileMode", onMobile);
   try {
-    settings["MobileMode"].SetTo = onMobile;
-    settings["MobileMode"].UpdateFunction(onMobile);
-  } catch (e) { }
+    updateSetting("MobileMode", onMobile, true, window.settings.settings);
+  } catch (e) {
+    console.error("Failed to update MobileMode setting via settings object:", e);
+    localStorage.setItem(daHubSettingsPrefix + "MobileMode", onMobile);
+  }
 }
 
 let __logoClicks = 0;
 function logoClick() {
   __logoClicks++;
   if (__logoClicks >= 10) {
-    notify({Text: "<img src='img/butterdog.png' style='width:80px;height:80px;'></img>"});
+    notify({ Text: "<img src='img/butterdog.png' style='width:80px;height:80px;'></img>" });
     __logoClicks = 0;
   }
 }
@@ -192,11 +357,101 @@ function observe(element, callback) {
   observer.observe(element, { childList: true, attributes: true });
 }
 
+let currentVersion = null;
+let updateAvailable = false;
+let updateInterval = null;
+/**
+ * Fetches the current version from the server, and compares it to the current version.
+ * If the versions are different, it notifies the user that an update is available.
+ * @returns {Promise<boolean>} True if an update is available, false otherwise.
+ */
+function fetchVersion() {
+  return fetch('version')
+    .then(response => response.text())
+    .then(async (version) => {
+      if (updateAvailable == true) return;
+      if (currentVersion == null) {
+        currentVersion = version.trim();
+        if (versionText) {
+          versionText.innerText = "Da Hub version " + currentVersion;
+        }
+        return false;
+      } else if (version.trim() != currentVersion.trim()) {
+        newVersion = version.trim();
+
+        // Determine if the version is a major or minor update (number changed, or letter changed)
+        // Example version: 13a
+        const currentVersionNumber = parseInt(currentVersion);
+        const newVersionNumber = parseInt(version.trim());
+        notify({
+          Text: await getElementLanguageData(newVersionNumber > currentVersionNumber ? "newMajorVersionAvailable" : "newMinorVersionAvailable")
+        });
+
+        updateAvailableButton.classList.add("visible");
+        updateAvailable = true;
+        clearInterval(updateInterval);
+        updateInterval = null;
+
+        if (versionText) {
+          versionText.innerText = "Da Hub version " + currentVersion + " -> " + version.trim();
+        }
+
+        return true;
+      }
+
+      return false;
+    })
+    .catch(error => {
+      console.warn('Error fetching version:', error);
+    });
+}
+
+function reloadPage() {
+  window.location.reload();
+}
+
+function updateSite() {
+  if (newVersion) {
+    try {
+      // Append new version to URL
+      const url = new URL(window.location.href);
+      url.searchParams.set("v", newVersion);
+      window.location.replace(url.toString());
+      return; // Completed, don't continue
+    } catch (err) {
+      // Do nothing
+    }
+  }
+
+  // If all else fails, or no new version is detected, just reload
+  reloadPage();
+}
+
 // Apps setup
 const _weeklyEnabled = localStorage.getItem(daHubSettingsPrefix + "WeeklyRecommend");
 
 addAllValidApps();
-addAppsOfTheWeek();
+
+if (_weeklyEnabled != false && _weeklyEnabled != "false") {
+  let appTiles = [];
+  function addRecommendations() {
+    // Clear existing recommendations
+    appTiles.forEach((appId) => {
+      const appElement = document.getElementById(appId + "weeklyApps");
+      if (appElement) appElement.remove();
+    });
+    appTiles = [];
+
+    getAppRecommendations().forEach((app) => {
+      createAppTile(getAppInfo(app), app, document.getElementById("weeklyApps"));
+      appTiles.push(appID(app));
+    });
+  }
+
+  addRecommendations();
+  setInterval(addRecommendations, 10 * 60 * 1000); // Update every 10 minutes
+}
+
 if (_weeklyEnabled == false) {
   document.querySelectorAll(".weeklyRecommendations").forEach((element) => {
     element.style.display = "none";
@@ -204,21 +459,10 @@ if (_weeklyEnabled == false) {
 }
 sortApps();
 
-window.addEventListener('beforeunload', (event) => {
-  event.returnValue = "Are you sure you want to leave?";
-});
-document.addEventListener('contextmenu', function (e) {
-  e.preventDefault();
-}, false);
-
 // Events
-clear.addEventListener("click", function () {
-  searchInput.value = "";
-  searchApp();
+document.addEventListener('DOMContentLoaded', function () {
+  checkInFrame();
 });
-
-searchForm.addEventListener("input", handleSearch);
-searchForm.addEventListener("submit", handleSearch);
 
 /* 
   Final setup
@@ -243,7 +487,6 @@ if (mobileMode == false && isMobile() && localStorage.getItem(daHubSettingsPrefi
   mobileDetected();
 }
 
-// Create particles
-if (particlesEnabled === true) {
-  createParticles();
-}
+// Fetch version every 10 minutes
+fetchVersion();
+updateInterval = setInterval(fetchVersion, 10 * 60 * 1000);

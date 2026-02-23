@@ -1,17 +1,18 @@
+const notificationsElement = document.getElementById("notifications");
+
 function notify(info) {
   info.Text = info.Text || "No text for notification.";
   info.ShowTime = info.ShowTime || 3000;
 
   const p = document.createElement("p");
-  p.classList.add("notification");
+  p.classList.add("backdropBlur", "notification");
   p.innerHTML = info.Text;
-  p.classList.add("backdropBlur");
 
-  document.getElementById("notifications").appendChild(p);
+  notificationsElement.appendChild(p);
 
-  setTimeout(function () {
+  setTimeout(() => {
     p.style.animation = "notificationFadeOut 0.5s ease";
-    setTimeout(function () { p.remove() }, 500);
+    setTimeout(() => p.remove(), 500);
   }, info.ShowTime);
 }
 

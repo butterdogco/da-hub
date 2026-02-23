@@ -1,8 +1,17 @@
 const _weeklyAppsCount = 4;
 const _backupAppImage = "img/defaultImage.png";
 const _favoriteAppIcon = "https://raw.githubusercontent.com/butterdogco/da-hub/refs/heads/main/img/icons/star_hollow.svg";
+const openAppImage = document.getElementById("appOpenImage");
 
-function createAppTile(info, app, location, lazy=false) {
+const onAppPlayed = personalization.onAppPlayed;
+const getAppPlayedEntry = personalization.getAppPlayedEntry;
+
+function seededRandom(seed) {
+  var x = Math.sin(seed++) * 10000;
+  return x - Math.floor(x);
+}
+
+function createAppTile(info, app, location, lazy = false) {
   if ((location && location.querySelector(`#${appID(app)}${location && location.id || ""}`) === null) || location == null) {
     if (isReleased(info.added)) {
       const b = document.createElement("button");
@@ -21,47 +30,73 @@ function createAppTile(info, app, location, lazy=false) {
       if (lazy == true) img.setAttribute("loading", "lazy");
       img.onclick = () => {
         if (info.openWithCode == true) {
-          const url = `${window.location.origin}/da-hub/${info.url}`;
-          openWindow(url, "New Tab", "", true, false);
+          const url = `${window.location.origin}/${info.url}`;
+          openWindow(url, "New Tab", "", true, false, app.Notice);
         } else {
+          openAppImage.src = img.src;
+          const rect = img.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          openAppImage.style.left = centerX + "px";
+          openAppImage.style.top = centerY + "px";
+          openAppImage.style.width = rect.width + "px";
+          openAppImage.style.height = rect.height + "px";
+          openAppImage.classList.add("visible");
+          setTimeout(() => {
+            openAppImage.classList.remove("visible");
+          }, 500);
           openSite(`${info.url}`);
         }
-  
+
         try {
-          gtag("event", "openApp", {
-            'app_name':app.Name
+          if (!app || !app.Id) return;
+          fetch("/log_event", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              event: "open_app",
+              data: {
+                app_id: app.Id
+              }
+            })
+          }).catch(err => {
+            console.error("Failed to log open_app event:", err);
           });
-        } catch (err) {}
-        if (app.Notice) notify({Text:app.Notice, ShowTime:5000});
+        } catch (err) { }
+        onAppPlayed(app);
+        if (app.Notice && !app.OpenWithCode) notify({ Text: app.Notice, ShowTime: 5000 });
       }
-  
+
       p.innerText = app.Name;
       p.classList.add("appName");
-  
+
       overlay.classList.add("overlay");
-      
+
       tags.classList.add("tags");
       overlay.appendChild(tags);
-      
+
       fav.classList.add("favorite");
       fav.title = "Toggle favorite";
       fav.onclick = () => {
         try {
           setFavorite(app, !isFavorite(app));
+          // window.sa_event("toggle_app_favorite", { app_id: app.id });
         } catch (err) {
           console.error(err);
         }
       }
       overlay.appendChild(fav);
-      
+
       b.appendChild(img);
       b.appendChild(overlay);
       b.appendChild(p);
-  
+
       if (info.added != undefined) {
         if (info.added.Bool) {
           const newP = document.createElement("p");
-          newP.innerText = (() => {try { return unsafeGetElementLanguageData("appTagNew");}catch(e){return "NEW"}})() ?? "NEW";
+          newP.innerText = (() => { try { return unsafeGetElementLanguageData("appTagNew"); } catch (e) { return "NEW" } })() ?? "NEW";
           newP.classList.add("new");
           newP.setAttribute("data-lang", "appTagNew");
           newP.title = "This app was recently added (within the last 7 days)";
@@ -69,7 +104,7 @@ function createAppTile(info, app, location, lazy=false) {
           newApps++;
         }
       }
-  
+
       if (info.broken || app["Hidden"] == true) {
         const newP = document.createElement("p");
         newP.classList.add("broken");
@@ -77,21 +112,21 @@ function createAppTile(info, app, location, lazy=false) {
         newP.title = "This app may not work at the moment, we'll fix it soon.";
         tags.appendChild(newP);
       }
-  
+
       if (info.fixed.Bool) {
         const newP = document.createElement("p");
-        newP.innerText = (() => {try { return unsafeGetElementLanguageData("appTagFixed");}catch(e){return "FIXED"}})() ?? "FIXED";
+        newP.innerText = (() => { try { return unsafeGetElementLanguageData("appTagFixed"); } catch (e) { return "FIXED" } })() ?? "FIXED";
         newP.classList.add("fixed");
         newP.setAttribute("data-lang", "appTagFixed");
         newP.title = "This app was recently fixed.";
         tags.appendChild(newP);
         newApps++;
       }
-  
+
       if (info.updated != undefined) {
         if (info.updated.Bool) {
           const newP = document.createElement("p");
-          newP.innerText = (() => {try { return unsafeGetElementLanguageData("appTagUpdated");}catch(e){return "UPDATED"}})() ?? "UPDATED";
+          newP.innerText = (() => { try { return unsafeGetElementLanguageData("appTagUpdated"); } catch (e) { return "UPDATED" } })() ?? "UPDATED";
           newP.setAttribute("data-lang", "appTagUpdated");
           newP.classList.add("updated");
           newP.title = "This app was recently updated to a newer version.";
@@ -99,18 +134,27 @@ function createAppTile(info, app, location, lazy=false) {
           newApps++;
         }
       }
-  
+
+      if (info.WIP == true) {
+        const newP = document.createElement("p");
+        newP.innerText = (() => { try { return unsafeGetElementLanguageData("appTagWIP"); } catch (e) { return "WIP" } })() ?? "WIP";
+        newP.classList.add("wip");
+        newP.setAttribute("data-lang", "appTagWIP");
+        newP.title = "This app is a work in progress and may not be fully functional.";
+        tags.appendChild(newP);
+      }
+
       if (info.pinned) {
         fav.classList.add("favorited");
       }
-  
+
       location = location || document.getElementById("apps");
       location.appendChild(b);
-  
+
       img.onload = function () {
         img.style.opacity = 1;
       };
-  
+
       img.onerror = function () {
         img.src = _backupAppImage;
       };
@@ -121,7 +165,7 @@ function createAppTile(info, app, location, lazy=false) {
 }
 
 function isReleased(added) {
-  if (typeof(added) === "object" && added["Date"] != null) {
+  if (typeof (added) === "object" && added["Date"] != null) {
     added = added["Date"];
   } else {
     return;
@@ -134,11 +178,11 @@ function isReleased(added) {
 }
 
 function isNew(added, days) {
-  if (typeof(added) === "object" && added["Date"] != null) {
+  if (typeof (added) === "object" && added["Date"] != null) {
     added = added["Date"];
-  } /* else if ((added instanceof Date && !isNaN(added)) == false) {
+  } else if ((added instanceof Date && !isNaN(added)) == false) {
     added = new Date("January 1, 2020");
-  } */
+  }
 
   days = days || 7;
   let newlyAdded = false;
@@ -154,7 +198,7 @@ function isNew(added, days) {
 }
 
 function isAppDatePropertyValid(property) {
-  return (typeof(property) === "object" && property !== null && property.hasOwnProperty("Date"));
+  return (typeof (property) === "object" && property !== null && property.hasOwnProperty("Date"));
 }
 
 function getAppInfo(app) {
@@ -165,9 +209,10 @@ function getAppInfo(app) {
     thumbnail: app.Thumbnail,
     broken: app.Broken,
     newlyUpdated: false,
-    fixed: isAppDatePropertyValid(app.Fixed) && app.Fixed || {Bool:isNew(app.Fixed), Date:app.Fixed},
-    added: isAppDatePropertyValid(app.Added) && app.Added || {Bool:isNew(app.Added), Date:app.Added},
-    updated: isAppDatePropertyValid(app.Updated) && app.Updated || {Bool:isNew(app.Updated), Date:app.Updated},
+    fixed: isAppDatePropertyValid(app.Fixed) && app.Fixed || { Bool: isNew(app.Fixed), Date: app.Fixed },
+    added: isAppDatePropertyValid(app.Added) && app.Added || { Bool: isNew(app.Added), Date: app.Added },
+    updated: isAppDatePropertyValid(app.Updated) && app.Updated || { Bool: isNew(app.Updated), Date: app.Updated },
+    WIP: app.WIP || false,
     pinned: isFavorite(app),
     openWithCode: app.OpenWithCode
   };
@@ -217,12 +262,31 @@ function setupApp(app) {
 
 function sortApps() {
   try {
-    var main = document.getElementById('main');
+    var appsContainer = document.getElementById('apps');
+    const appsButtons = Array.from(appsContainer.getElementsByClassName('appsButton'));
+    const sortBy = document.getElementById('sortSelect').value;
 
-    [].map.call(main.children, Object).sort(function (a, b) {
-      return +a.id.match(/\d+/) - +b.id.match(/\d+/);
-    }).forEach(function (elem) {
-      main.appendChild(elem);
+    appsButtons.sort(function(a, b) {
+      const appA = apps[Number.parseInt(a.id.replace('appButton', '').replace('apps', ''))];
+      const appB = apps[Number.parseInt(b.id.replace('appButton', '').replace('apps', ''))];
+      
+      if (sortBy === 'alphabetical') {
+        return appA.Name.localeCompare(appB.Name);
+      } else if (sortBy === 'newest') {
+        return new Date(appB.Added) - new Date(appA.Added);
+      } else if (sortBy === 'oldest') {
+        return new Date(appA.Added) - new Date(appB.Added);
+      } else if (sortBy === 'mostPlayed') {
+        const playedEntryA = getAppPlayedEntry(appA.Id);
+        const playedEntryB = getAppPlayedEntry(appB.Id);
+        const playCountA = playedEntryA ? playedEntryA.playCount : 0;
+        const playCountB = playedEntryB ? playedEntryB.playCount : 0;
+        return playCountB - playCountA;
+      }
+    });
+
+    appsButtons.forEach(function(app) {
+      appsContainer.appendChild(app);
     });
   } catch (err) {
     console.error(err)
@@ -290,33 +354,27 @@ async function setFavorite(app, makeFavorite) {
 
 function getAppsOfTheWeek() {
   // This function will return a random selection of apps,
-  // the apps selected will stay the same for 1 week.
+  // the apps selected will stay the same for 1 week, by using the week number plus year as a seed.
 
   const currentDate = new Date();
-  const startDate = new Date(currentDate.getFullYear(), 0, 1); // Start date of the current year (January 1st)
-  const days = Math.floor((currentDate - startDate) / (1000 * 60 * 60 * 24)); // Days since January 1st
-  const week = Math.floor(days / 7); // Week number
-  const seed = (week * 6999) % 10000;
+  const oneJan = new Date(currentDate.getFullYear(), 0, 1);
+  const numberOfDays = Math.floor((currentDate - oneJan) / (24 * 60 * 60 * 1000));
+  const weekNumber = Math.ceil((currentDate.getDay() + 1 + numberOfDays) / 7);
+  const seed = currentDate.getFullYear().toString() + weekNumber.toString();
 
-  const selectedApps = [];
-  const seenIndexes = new Set();
+  let appsOfTheWeek = [];
+  let availableApps = apps.filter(app => isReleased(getAppInfo(app).added) && !app["Hidden"] && !app["Broken"]);
 
-  for (let i=0; selectedApps.length < _weeklyAppsCount; i++) {
-    const randomIndex = (seed + i) % apps.length;
-    const app = apps[randomIndex];
-
-    if (!seenIndexes.has(randomIndex)
-        && app["Broken"] == false
-        && app["Hidden"] == false) {
-      selectedApps.push(app);
-      seenIndexes.add(randomIndex);
-    }
+  while (appsOfTheWeek.length < _weeklyAppsCount && availableApps.length > 0) {
+    const randomIndex = Math.floor(seededRandom(parseInt(seed)) * availableApps.length);
+    appsOfTheWeek.push(availableApps[randomIndex]);
+    availableApps.splice(randomIndex, 1);
   }
 
-  return selectedApps;
+  return appsOfTheWeek;
 }
 
-function addAppsOfTheWeek() {
+function addWeeklyRecommendations() {
   const weeklyApps = getAppsOfTheWeek();
   weeklyApps.forEach((app) => {
     createAppTile(getAppInfo(app), app, document.getElementById("weeklyApps"));

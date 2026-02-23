@@ -1,0 +1,34 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+    --accent: rgb(88, 159, 217);
+    --accentLight: rgb(115, 186, 245);
+
+    --accentTransparent1: rgba(88, 159, 217, 0.5);
+    --accentTransparent2: rgba(88, 159, 217, 0.2);
+
+    --accentDarkBackgroundTransparent1: rgba(94, 101, 126, 0.637);
+    --accentDarkBackgroundTransparent2: rgba(31, 35, 48, 0.6);
+
+    --mainBackground: rgb(30, 30, 30);
+    --mainBackgroundImage: url("../../img/backgrounds/Purple.png");
+
+    --font: 'Inter', sans-serif;
+
+    --textColor1: white;
+    --textColor2: rgb(230, 230, 230);
+
+    --textColor2Transparent: rgba(230, 230, 230, 0.8);
+
+    --linkColor1: rgb(88, 159, 217);
+    
+    --borderRadiusTiny: 6px;
+    --borderRadiusSlight: 16px;
+    --borderRadiusRound: 30vh;
+    
+    --starNoFill: url("../img/icons/star_hollow.svg");
+    --starFill: url("../img/icons/star_solid.svg");
+
+    --backdropBlur: blur(10px) brightness(0.9);
+    --noBlurFilter: brightness(0.2);
+}

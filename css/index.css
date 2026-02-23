@@ -1,8 +1,8 @@
-@import url("themes/default.css");
+@import url("./elements/particles.css");
 
 :root {
   --buttonImageEndPosition: 500px;
-  --buttonImageEndOpacity: 0.3;
+  --buttonImageEndOpacity: 0.15;
 }
 
 @keyframes buttonFlash {
@@ -35,30 +35,40 @@
 }
 
 html {
-  background-color: rgb(62, 36, 60);
-  background-image: url("https://raw.githubusercontent.com/butterdogco/da-hub/refs/heads/main/img/background.png");
+  background-color: var(--mainBackground);
+  background-image: var(--mainBackgroundImage);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center right;
-  overflow: hidden;
+  overflow-x: hidden;
   width: 100vw;
-  height: 100vh;
 }
 
 body {
   background: transparent;
-  padding-bottom: 30px;
-  font-family: var(--font);
+  font-family: var(--font), sans-serif;
+  color: var(--textColor1);
+  margin: 0;
+  width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
   color: white;
   margin: 0;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  transition: 0.5s ease background;
+  transition: 0.3s ease background;
 
-  &:has(.openButton:hover) {
-    background: rgba(0, 0, 0, 0.2);
+  &:has(.openButton:hover),
+  &:has(.openButton:focus),
+  &:has(.openButton:active),
+  &:has(.openButton:focus-within) {
+    background: rgba(0, 0, 0, 0.5);
   }
+}
+
+* {
+  font-family: inherit;
 }
 
 button.openButton {
@@ -66,26 +76,27 @@ button.openButton {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  margin: 0;
   width: 350px;
   max-width: 90vw;
   height: 200px;
   max-height: 90vh;
-  margin: 6px;
   background: var(--accentDarkBackgroundTransparent2);
   border: none;
   outline: 4px solid var(--accentDarkBackgroundTransparent1);
   outline-offset: 0;
   color: var(--textColor1);
   font-weight: bold;
-  font-size: 25px;
-  border-radius: var(--borderRadius1);
+  font-size: 26px;
+  border-radius: var(--borderRadiusTiny);
   cursor: pointer;
   overflow: hidden;
+  backdrop-filter: blur(4px);
   transition: 0.1s ease;
   transition-property: outline-offset outline-color background width box-shadow;
 
   .repeatingImage {
-    background-image: url("https://raw.githubusercontent.com/butterdogco/butterdogco.github.io/refs/heads/main/docs/img/favicon.ico");
+    background-image: url("../img/ButterDog\ Rounded.png");
     background-repeat: repeat;
     width: 150%;
     height: 250%;
@@ -111,7 +122,7 @@ button.openButton {
     outline-offset: 6px;
     outline-color: var(--accent);
     width: 500px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 24px var(--accentLight);
     animation: buttonFlash 1.5s ease infinite;
 
     .repeatingImage {
@@ -121,7 +132,7 @@ button.openButton {
     }
 
     p {
-      text-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
     }
   }
 }

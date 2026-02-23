@@ -1,3 +1,5 @@
+let overlayBackground = document.getElementById("overlayBackground");
+
 /**
  * Sends a get request to the provided URL, and returns the response text.
  */
@@ -62,4 +64,58 @@ export async function openWindow(url, title, icon, code, removeCurrent) {
   if (removeCurrent == true) {
     window.location.replace("https://google.com");
   }
+}
+
+/**
+ * Displays a prompt dialog with the provided message and options.
+ * Returns a promise that resolves with the user's input or null if cancelled.
+ * @param {string} message - The message to display in the prompt.
+ * @param {object} buttons - Buttons for the prompt, e.g., [{text = "OK", callback = () => {}}].
+ * @returns {Promise<string|null>} - A promise that resolves with null.
+ */
+export async function displayPrompt(message, buttons) {
+  return new Promise((resolve) => {
+    const prompt = document.createElement('div');
+    prompt.classList.add('promptBox', 'overlayMenu');
+    prompt.innerHTML = `<h2 class="promptMessage">${message}</h2>
+    <div class="buttons">
+      ${buttons && buttons.length ? buttons.map((button, index) => `<button id="promptButton${index}">${button.text}</button>`).join('') : `
+        <button id="promptCancel">Nah (This prompt was not configured correctly)</button>
+      `}
+    </div>`;
+    if (!overlayBackground) {
+      overlayBackground = document.createElement('div');
+      overlayBackground.id = "overlayBackground";
+      overlayBackground.classList.add('overlayBackground');
+      document.body.appendChild(overlayBackground);
+    }
+    overlayBackground.addEventListener('click', () => {
+      closePrompt();
+      resolve(null);
+    });
+    overlayBackground.classList.add('open');
+    document.body.appendChild(prompt);
+    prompt.classList.add('open'); // Allow CSS transition
+
+    function closePrompt() {
+      overlayBackground.classList.remove('open');
+      prompt.remove();
+    }
+
+    // Add event listeners for buttons
+    if (buttons && buttons.length) {
+      buttons.forEach((button, index) => {
+        document.getElementById(`promptButton${index}`).addEventListener('click', () => {
+          closePrompt();
+          button.callback();
+          resolve();
+        });
+      });
+    } else {
+      document.getElementById('promptCancel').addEventListener('click', () => {
+        closePrompt();
+        resolve(null);
+      });
+    }
+  });
 }

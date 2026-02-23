@@ -1,17 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-    --accent: rgb(88, 159, 217);
-    --accentLight: rgb(115, 186, 245);
+    --accent: rgb(217, 88, 88);
+    --accentLight: rgb(245, 115, 115);
 
-    --accentTransparent1: rgba(88, 159, 217, 0.5);
-    --accentTransparent2: rgba(88, 159, 217, 0.2);
+    --accentTransparent1: rgba(217, 88, 88, 0.5);
+    --accentTransparent2: rgba(217, 88, 88, 0.2);
 
-    --accentDarkBackgroundTransparent1: rgba(94, 101, 126, 0.637);
-    --accentDarkBackgroundTransparent2: rgba(31, 35, 48, 0.6);
+    --accentDarkBackgroundTransparent1: rgba(126, 94, 94, 0.637);
+    --accentDarkBackgroundTransparent2: rgba(48, 31, 31, 0.6);
 
     --mainBackground: rgb(30, 30, 30);
-    --mainBackgroundImage: url("https://raw.githubusercontent.com/butterdogco/da-hub/refs/heads/main/img/background.png");
+    --mainBackgroundImage: url("../../img/backgrounds/Red.png");
 
     --font: 'Inter', sans-serif;
 
@@ -20,9 +20,11 @@
 
     --textColor2Transparent: rgba(230, 230, 230, 0.8);
 
-    --linkColor1: rgb(88, 159, 217);
+    --linkColor1: rgb(217, 88, 88);
     
-    --borderRadius1: 16px;
+    --borderRadiusTiny: 6px;
+    --borderRadiusSlight: 16px;
+    --borderRadiusRound: 30vh;
     
     --starNoFill: url("../img/icons/star_hollow.svg");
     --starFill: url("../img/icons/star_solid.svg");

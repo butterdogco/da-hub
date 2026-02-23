@@ -1,3 +1,32 @@
+/**
+ * An app available in the Da Hub.
+ * @typedef {Object} App
+ * @property {string} Name - The name of the app.
+ * @property {string} Id - The unique identifier for the app.
+ * @property {string?} Thumbnail - The thumbnail image for the app.
+ * @property {string?} Description - A brief description of the app.
+ * 
+ * @property {string?} Folder - The folder where the app is located.
+ * @property {string?} Index - The index file for the app.
+ * 
+ * @property {Date?} Added - The date the app was added.
+ * @property {Date?} Updated - The date the app was last updated.
+ * @property {Date?} Fixed - The date the app was last fixed.
+ * @property {Boolean?} WIP - Indicates if the app is a work in progress.
+ * 
+ * @property {boolean?} Mobile - Indicates if the app is mobile-friendly.
+ * @property {string?} Notice - Any special notice about the app, displayed before launching.
+ * @property {string[]?} Genres - The genres associated with the app.
+ * @property {string[]?} Related - Related apps IDs.
+ * 
+ * @property {boolean?} Hidden - Indicates if the app is hidden from the main list.
+ * @property {boolean?} OpenWithCode - Indicates if the app should be opened in a new tab.
+ */
+
+/**
+ * The list of apps available in the Da Hub.
+ * @type {App[]}
+ */
 const apps = [
   {
     Name: "1v1.LOL",
@@ -300,6 +329,14 @@ const apps = [
     Folder: "Fire Boy and Water Girl/2",
     Added: new Date("April 24, 2025"),
     Hidden: true
+  },
+  {
+    Name: "Five Nights at Epstein's",
+    Folder: "FNAE/",
+    Mobile: true,
+    Thumbnail: "thumbnail.jpg",
+    Genres: ["horror", "fnaf fangame"],
+    Added: new Date("February 23, 2026"),
   },
   {
     Name: "FNAF 1",
@@ -964,11 +1001,22 @@ const apps = [
   },
 ];
 
+function getAppById(id) {
+  for (let i = 0; i < apps.length; i++) {
+    if (apps[i].Id === id) {
+      return apps[i];
+    }
+  }
+  return null;
+}
+
 apps.sort(function (a, b) {
-  if (a.Name < b.Name) {
+  const name_a = a.Name.toLowerCase();
+  const name_b = b.Name.toLowerCase();
+  if (name_a < name_b) {
     return -1;
   }
-  if (a.Name > b.Name) {
+  if (name_a > name_b) {
     return 1;
   }
   return 0;

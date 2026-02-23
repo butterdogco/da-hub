@@ -24,30 +24,34 @@ locales.unsafeGetElementLanguageData = function(name) {
     return locales.currentLanguageData[name] || null;
 }
 
+locales.updateLanguageElement = async function(element) {
+    const key = element.getAttribute("data-lang");
+    const titleKey = element.getAttribute("data-lang-title");
+    const placeholderKey = element.getAttribute("data-lang-placeholder");
+    if (key) {
+        const text = await locales.getElementLanguageData(key);
+        if (text) {
+            element.innerText = text;
+        }
+    }
+    if (titleKey) {
+        const text = await locales.getElementLanguageData(titleKey);
+        if (text) {
+            element.setAttribute("title", text);
+        }
+    }
+    if (placeholderKey) {
+        const text = await locales.getElementLanguageData(placeholderKey);
+        if (text) {
+            element.setAttribute("placeholder", text);
+        }
+    }
+}
+
 locales.updateLanguageElements = async function () {
     const elements = document.querySelectorAll("[data-lang], [data-lang-title], [data-lang-placeholder]");
     elements.forEach(async (element) => {
-        const key = element.getAttribute("data-lang");
-        const titleKey = element.getAttribute("data-lang-title");
-        const placeholderKey = element.getAttribute("data-lang-placeholder");
-        if (key) {
-            const text = await locales.getElementLanguageData(key);
-            if (text) {
-                element.innerText = text;
-            }
-        }
-        if (titleKey) {
-            const text = await locales.getElementLanguageData(titleKey);
-            if (text) {
-                element.setAttribute("title", text);
-            }
-        }
-        if (placeholderKey) {
-            const text = await locales.getElementLanguageData(placeholderKey);
-            if (text) {
-                element.setAttribute("placeholder", text);
-            }
-        }
+        await locales.updateLanguageElement(element);
     });
     console.log("Successfully updated page language");
 }

@@ -1,0 +1,38 @@
+@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;700&display=swap");
+
+:root {
+    --accent: rgb(0, 179, 0);
+    --accentLight: rgb(0, 255, 0);
+
+    --accentTransparent1: rgba(0, 255, 0, 0.5);
+    --accentTransparent2: rgba(0, 255, 0, 0.2);
+
+    --accentDarkBackgroundTransparent1: rgba(0, 51, 0, 0.8);
+    --accentDarkBackgroundTransparent2: rgba(0, 26, 0, 0.6);
+
+    --mainBackground: rgb(15, 15, 15);
+    --mainBackgroundImage: url("../../img/backgrounds/Hecker.avif");
+
+    --font: 'Source Code Pro', monospace;
+
+    --textColor1: rgb(240, 240, 240);
+    --textColor2: rgb(200, 200, 200);
+
+    --textColor2Transparent: rgba(240, 240, 240, 0.8);
+
+    --linkColor1: rgb(0, 255, 0);
+    
+    --borderRadiusTiny: 3px;
+    --borderRadiusSlight: 8px;
+    --borderRadiusRound: 20px;
+    
+    --starNoFill: url("../img/icons/star_hollow.svg");
+    --starFill: url("../img/icons/star_solid.svg");
+
+    --backdropBlur: blur(8px) brightness(0.95);
+    --noBlurFilter: brightness(0.3);
+}
+
+.appsButton img.thumbnail {
+    mask-image: linear-gradient(45deg, rgba(255, 255, 255, 0.5) 0%, rgba(255,255,255,0.8) 75%, rgba(154, 154, 154, 0.4) 100%) !important;
+}

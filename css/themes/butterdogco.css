@@ -1,0 +1,88 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+    --accent: rgb(128, 124, 113);
+    --accentLight: rgb(187, 181, 156);
+
+    --accentTransparent1: rgba(185, 180, 139, 0.5);
+    --accentTransparent2: rgba(158, 149, 118, 0.2);
+
+    --accentDarkBackgroundTransparent1: rgba(126, 116, 94, 0.637);
+    --accentDarkBackgroundTransparent2: rgba(48, 44, 31, 0.6);
+
+    --mainBackground: rgb(30, 30, 30);
+    --mainBackgroundImage: url("https://github.com/butterdogco/butterdogco.github.io/blob/main/docs/img/backgrounds/VerticalBackgroundTest3.png?raw=true");
+
+    --font: 'Inter', sans-serif;
+
+    --textColor1: white;
+    --textColor2: rgb(230, 230, 230);
+
+    --textColor2Transparent: rgba(230, 230, 230, 0.8);
+
+    --linkColor1: rgb(88, 159, 217);
+
+    --borderRadiusTiny: 12px;
+    --borderRadiusSlight: 16px;
+    --borderRadiusRound: 30vh;
+
+    --starNoFill: url("../img/icons/star_hollow.svg");
+    --starFill: url("../img/icons/star_solid.svg");
+
+    --backdropBlur: blur(12px) brightness(0.9);
+    --noBlurFilter: brightness(0.2);
+}
+
+body {
+    scrollbar-color: var(--accentLight) var(--mainBackground);
+    scrollbar-width: thin;
+}
+
+.topHeader {
+    --margin: 8px;
+    width: calc(100vw - var(--margin) * 2) !important;
+    top: var(--margin) !important;
+    left: var(--margin) !important;
+    border: none !important;
+    outline: 3px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--borderRadiusSlight);
+    background: rgba(230, 230, 240, 0.1) !important;
+
+    .buttons {
+        top: calc(100% + 8px) !important;
+
+        a {
+            background: rgba(230, 230, 240, 0.3) !important;
+            border-radius: var(--borderRadiusTiny);
+            border: none !important;
+            outline: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 16px !important;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+            text-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+
+            a:hover {
+                background: rgba(230, 230, 240, 0.8) !important;
+            }
+        }
+    }
+}
+
+.disclaimer {
+    background: rgba(230, 230, 240, 0.1) !important;
+    border-radius: var(--borderRadiusSlight);
+    border: none !important;
+    outline: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+    bottom: 8px !important;
+}
+
+.appsButton {
+    img.thumbnail {
+        mask-image: linear-gradient(45deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.8) 75%, rgba(154, 154, 154, 0.4) 100%) !important;
+    }
+
+    p.appName {
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+    }
+}

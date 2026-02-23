@@ -1,15 +1,21 @@
-// import { languages, updateLanguage, getElementLanguageData, unsafeGetElementLanguageData, currentLanguage, currentLanguageData } from "./locales.js";
 let _currentLanguage = locales.currentLanguage;
 let settings = {}; // Object to hold settings data
 
 // Settings Handler
+const versionText = document.getElementById("currentVersion");
+const themeSheet = document.getElementById("themeStylesheet");
 let settingsFrame = document.getElementById("settingsFrame");
 let settingsList = document.getElementById("settingsList");
 let settingsOpen = false;
 
 const settingsHeaderLangPrefix = "settingsCategory";
 const settingsItemLangPrefix = "settingsItem";
+const settingsItemButtonLangSuffix = "Button";
 const settingsSocialLangPrefix = "settingsSocial";
+const closeKeybind = "Escape";
+
+const updateTheme = themeSystem.updateTheme;
+const themes = themeSystem.themes;
 
 async function getSettingDisplayName(name) {
   return await locales.getElementLanguageData(settingsItemLangPrefix + name);
@@ -23,6 +29,12 @@ async function getSocialLinkText(name) {
   return await locales.getElementLanguageData(settingsSocialLangPrefix + name);
 }
 
+function parseBoolean(value, defaultValue = null) {
+  if (value === 'true' || value === true) return true;
+  if (value === 'false' || value === false) return false;
+  return defaultValue;
+}
+
 async function initSettings() {
   const categoryNames = {
     Visual: await locales.getElementLanguageData("settingsCategoryVisual"),
@@ -32,23 +44,11 @@ async function initSettings() {
   };
 
   const socialLinks = [
-    {name: "Discord", url: "https://discord.gg/KZzVM4rfg6", icon: "img/discord.jpg"},
-    {name: "AlternateSiteHub", url: "https://butterdogceo.github.io/"},
-    {name: "ButterDogCoSite", url: "https://butterdogceo.github.io/bdogco/", icon: "img/butterdogco.png"},
+    { name: "ButterDogCoSite", url: "https://butterdogco.com/", icon: "img/butterdogco.png" },
+    { name: "Discord", url: "https://discord.gg/KZzVM4rfg6", icon: "img/discord.jpg" },
   ];
 
   let allSettings = {
-    /*["Particles"]: {
-      SetTo: "false",
-      Options: ["true", "false"], // The default option is expected to be the first
-      UpdateFunction: function(val) {
-        particlesEnabled = val == "true" && true || false;
-        if (particlesEnabled == true) {
-          createParticles();
-        }
-      }
-    },*/
-
     ["Language"]: {
       Category: "Visual",
       LanguageKey: "Language",
@@ -62,16 +62,39 @@ async function initSettings() {
       },
     },
 
+    ["Theme"]: {
+      Category: "Visual",
+      LanguageKey: "Theme",
+      SetTo: "Blue",
+      Options: themes.map(t => t.name),
+      UpdateFunction: updateTheme
+    },
+
     ["Grid Mode"]: {
       Category: "Visual",
       LanguageKey: "AppGridMode",
       SetTo: "Default",
       Options: ["Default", "Square", "LargeTiles"],
       UpdateFunction: function (newSize) {
-        appsDiv.classList.remove(currentAppSize);
-        appsDiv.classList.add(newSize);
+        // appsDiv.classList.remove(currentAppSize);
+        // appsDiv.classList.add(newSize);
+        document.querySelectorAll(".apps").forEach((div) => {
+          div.classList.remove(currentAppSize);
+          div.classList.add(newSize);
+        });
         currentAppSize = newSize;
       },
+    },
+
+    ["Snow Particles"]: {
+      Category: "Visual",
+      LanguageKey: "SnowParticles",
+      SetTo: "false",
+      Options: ["false", "true"],
+      UpdateFunction: (val) => {
+        const enabled = parseBoolean(val, false);
+        setParticlesEnabled(enabled, true);
+      }
     },
 
     ["Weekly Recommendations"]: {
@@ -80,13 +103,9 @@ async function initSettings() {
       SetTo: "true",
       Options: ["true", "false"],
       UpdateFunction: function (val) {
-        const enabled = (val == "true" || val == true) && true || false;
+        const enabled = parseBoolean(val, false);
         document.querySelectorAll(".weeklyRecommendations").forEach((element) => {
-          if (enabled) {
-            element.style = "";
-          } else {
-            element.style.display = "none";
-          }
+          element.classList.toggle("hidden", !enabled);
         });
       }
     },
@@ -97,7 +116,7 @@ async function initSettings() {
       SetTo: "true",
       Options: ["true", "false"],
       UpdateFunction: function (val) {
-        const enabled = (val == "true" || val == true) && true || false;
+        const enabled = parseBoolean(val, false);
         updateVisibilityOfSettingsButton(enabled);
         if (settingsOpen && !enabled && appOpen) {
           locales.toggleSettings();
@@ -111,12 +130,25 @@ async function initSettings() {
       SetTo: "false",
       Options: ["false", "true"],
       UpdateFunction: function (val) {
-        const enabled = (val == "true" || val == true) && true || false;
+        const enabled = parseBoolean(val, false);
         timerEnabled = enabled;
         if (!enabled) {
           closeSpeedrunTimer();
         }
         updateVisibilityOfToggleButton();
+      }
+    },
+
+    ["Reload App Button"]: {
+      Category: "Features",
+      LanguageKey: "ReloadButtonInGame",
+      SetTo: "false",
+      Options: ["false", "true"],
+      UpdateFunction: function (val) {
+        const enabled = parseBoolean(val, false);
+        window.iframeReloadEnabled = enabled;
+        const button = document.getElementById("inGameReloadButton");
+        if (button) button.style.display = enabled ? "block" : "none";
       }
     },
 
@@ -126,7 +158,7 @@ async function initSettings() {
       SetTo: "false",
       Options: ["false", "true"],
       UpdateFunction: function (val) {
-        const enabled = (val == "true" || val == true) && true || false;
+        const enabled = parseBoolean(val, false);
         document.body.classList.toggle("mobileMode", enabled);
         document.querySelectorAll(".apps").forEach(div => {
           const placeholder = div.querySelector(".placeholder");
@@ -150,7 +182,7 @@ async function initSettings() {
       SetTo: "false",
       Options: ["false", "true"],
       UpdateFunction: function (val) {
-        const enabled = (val == "true" || val == true) && true || false;
+        const enabled = parseBoolean(val, false);
         document.body.classList.toggle("flipInAppButtons", enabled);
       }
     },
@@ -158,10 +190,10 @@ async function initSettings() {
     ["Transparent background blurring"]: {
       Category: "Performance",
       LanguageKey: "TransparentBackgroundBlurring",
-      SetTo: "false",
-      Options: ["false", "true"],
+      SetTo: "true",
+      Options: ["true", "false"],
       UpdateFunction: function (val) {
-        const enabled = (val == "true" || val == true) && true || false;
+        const enabled = parseBoolean(val, false);
         document.body.classList.toggle("blurEnabled", enabled);
       }
     },
@@ -169,6 +201,7 @@ async function initSettings() {
     ["Export Saved Data"]: {
       Category: "Advanced",
       LanguageKey: "ExportSavedData",
+      Text: "Download",
       Icon: "download.svg",
       RunFunction: exportData,
     },
@@ -176,26 +209,58 @@ async function initSettings() {
     ["Import Saved Data"]: {
       Category: "Advanced",
       LanguageKey: "ImportSavedData",
+      Text: "Upload",
       Icon: "upload.svg",
       RunFunction: loadData,
       FileInput: true,
     },
+
+
+    ["Reload Page"]: {
+      Category: "Advanced",
+      LanguageKey: "reloadPage",
+      LanguageKeyPrefix: false,
+      Text: "Reload",
+      Icon: "reload.svg",
+      RunFunction: reloadPage,
+    },
+
+    ["Check Updates"]: {
+      Category: "Advanced",
+      LanguageKey: "checkUpdates",
+      LanguageKeyPrefix: false,
+      Text: "Check",
+      Icon: "update.svg",
+      // RunFunction: fetchVersion,
+      RunFunction: () => {
+        fetchVersion().then(available => {
+          if (!available) alert(locales.unsafeGetElementLanguageData("noVersionAvailable"));
+        });
+      }
+    },
   }
 
   buildSettingsUI(allSettings, socialLinks, categoryNames);
+
+  // Add event listener to close settings with Escape key
+  document.addEventListener("keydown", function escListener(event) {
+    if (event.key === closeKeybind && settingsOpen) {
+      settings.toggleSettings();
+    }
+  });
 }
 
-async function buildSettingsUI(settings, socialLinks, categoryNames) {
+async function buildSettingsUI(settingsOptions, socialLinks, categoryNames) {
   const categories = [];
 
   // Setup categories array
-  for (let key in settings) {
-    const saved = getSavedSetting(key, settings);
+  for (let key in settingsOptions) {
+    const saved = getSavedSetting(key, settingsOptions);
     if (saved) {
-      updateSetting(key, saved, false, settings);
+      updateSetting(key, saved, false, settingsOptions);
     }
 
-    const category = settings[key]["Category"] || "General";
+    const category = settingsOptions[key]["Category"] || "General";
     if (!categories.some(cat => cat.name === category)) {
       categories.push({ name: category, options: [key] });
     } else {
@@ -210,7 +275,7 @@ async function buildSettingsUI(settings, socialLinks, categoryNames) {
     categoryElement.innerText = !locales.currentLanguageData && await getSettingHeaderText(category.name) || locales.unsafeGetElementLanguageData(settingsHeaderLangPrefix + category.name);
     settingsList.appendChild(categoryElement);
     category.options.forEach((option) => {
-      createOptionButton(option, settings);
+      createOptionButton(option, settingsOptions);
     });
   });
 
@@ -232,6 +297,7 @@ async function buildSettingsUI(settings, socialLinks, categoryNames) {
     li.appendChild(a);
 
     const img = document.createElement("img");
+    img.loading = "lazy";
     img.src = link.icon || "img/butterdog.png";
     img.className = "socialIcon";
     a.appendChild(img);
@@ -246,13 +312,26 @@ async function buildSettingsUI(settings, socialLinks, categoryNames) {
 
   settingsList.appendChild(header);
   settingsList.appendChild(container);
+  settingsList.appendChild(versionText); // Move version text to the end of the list
+
+  settings.settings = settingsOptions;
 }
 
-
-settings.toggleSettings = function() {
+settings.toggleSettings = function () {
   settingsFrame.classList.toggle("open");
   settingsOpen = settingsFrame.classList.contains("open");
+  overlayBackground.classList.toggle("open", settingsOpen);
   document.body.classList.toggle("settingsOpen", settingsOpen);
+
+  if (settingsOpen) {
+    settingsFrame.setAttribute("aria-hidden", "false");
+    // Add event listener to close settings when clicking outside
+    overlayBackground.addEventListener("click", settings.toggleSettings);
+  } else {
+    settingsFrame.setAttribute("aria-hidden", "true");
+    // Remove event listener when settings are closed
+    overlayBackground.removeEventListener("click", settings.toggleSettings);
+  }
 }
 
 function updateVisibilityOfSettingsButton(value) {
@@ -283,6 +362,8 @@ function updateSetting(name, newValue, save, settings) {
 
 function saveSetting(name, settings) {
   if (settings[name] != null) {
+    const savedOption = settings[name]["Save"];
+    if (savedOption === false) return; // Do not save if Save is false
     localStorage.setItem(`settings-${name}`, settings[name]["SetTo"]);
   }
 }
@@ -299,14 +380,16 @@ async function createOptionButton(name, settings) {
     // Check if the default value is a boolean
     const isABoolean = option.SetTo == "true" || option.SetTo == "false";
     const availableOptions = option.Options;
+    const langPrefix = option.LanguageKeyPrefix === false ? "" : settingsItemLangPrefix;
 
     const frame = document.createElement("li");
     frame.classList.add("option");
     const label = document.createElement("p");
-    label.setAttribute("data-lang", settingsItemLangPrefix + option.LanguageKey);
-    label.innerText = option.LanguageKey && (!locales.currentLanguageData && await getSettingDisplayName(option.LanguageKey) || locales.unsafeGetElementLanguageData(settingsItemLangPrefix + option.LanguageKey)) || name;
+    label.setAttribute("data-lang", langPrefix + option.LanguageKey);
+    label.innerText = option.LanguageKey && (!locales.currentLanguageData && await getSettingDisplayName(option.LanguageKey) || locales.unsafeGetElementLanguageData(langPrefix + option.LanguageKey)) || name;
     label.classList.add("label");
     frame.appendChild(label);
+
 
     if (isABoolean == true) {
       const checkbox = document.createElement("input");
@@ -335,10 +418,19 @@ async function createOptionButton(name, settings) {
         dropdown.appendChild(optionElement);
       });
       frame.appendChild(dropdown);
-    } else if (option.RunFunction) {
+    } else if (option.RunFunction) { // Button option
       const buttonElement = document.createElement("button");
-      buttonElement.innerText = "";
-      buttonElement.style.backgroundImage = `url(img/icons/${option.Icon})`;
+      const textElement = document.createElement("span");
+      textElement.classList.add("buttonText");
+      textElement.setAttribute("data-lang", langPrefix + option.LanguageKey + settingsItemButtonLangSuffix);
+      textElement.innerText = !locales.currentLanguageData && (await getSettingDisplayName(option.LanguageKey + settingsItemButtonLangSuffix) || option.Text) || (locales.unsafeGetElementLanguageData(langPrefix + option.LanguageKey + settingsItemButtonLangSuffix) || option.Text);
+      buttonElement.appendChild(textElement);
+
+      const iconElement = document.createElement("img");
+      iconElement.loading = "lazy";
+      iconElement.src = `img/icons/${option.Icon}`;
+      iconElement.classList.add("buttonIcon");
+      buttonElement.appendChild(iconElement);
       frame.appendChild(buttonElement);
 
       if (option.FileInput) {
@@ -356,6 +448,10 @@ async function createOptionButton(name, settings) {
           option.RunFunction();
         }
       ]
+    }
+
+    if (!option.RunFunction) {
+      updateSetting(name, option.SetTo, false, settings); // Initialize setting
     }
 
     settingsList.appendChild(frame);
