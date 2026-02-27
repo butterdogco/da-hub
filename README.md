@@ -1,7 +1,7 @@
 # Da Hub
 
 Da Hub is a games website, featuring over 100 games.
-Note that this version is no longer being updated, and will likely not be updated again anytime soon. Our focus has moved to the improved version, DH-WS, does not have public source code unfortunately.
+Note that this version is no longer being updated, and will likely not be updated again anytime soon. Our focus has moved to the improved version, DH-WS, which does not have public source code unfortunately.
 
 ## Games
 
